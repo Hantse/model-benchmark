@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "name": "api-jwt",
+  "description": "API .NET : JWT, tâches privées, rôle admin",
+  "promptFile": "PROMPT.md",
+  "instructionFiles": [
+    "AGENTS.md",
+    "FEATURES.md"
+  ],
+  "prepareCommands": [
+    [
+      "dotnet",
+      "restore",
+      "Benchmark.slnx",
+      "--locked-mode"
+    ]
+  ],
+  "validationCommands": [
+    [
+      "dotnet",
+      "test",
+      "Benchmark.slnx",
+      "--no-restore",
+      "--logger",
+      "trx;LogFileName=acceptance.trx",
+      "--results-directory",
+      "TestResults"
+    ]
+  ],
+  "protectedPaths": [
+    "tests",
+    "benchmark.json",
+    "PROMPT.md",
+    "FEATURES.md",
+    "AGENTS.md",
+    "README.md",
+    "global.json",
+    "Directory.Build.props",
+    "Benchmark.slnx",
+    ".gitignore",
+    "src/TaskApi/TaskApi.csproj",
+    "src/TaskApi/packages.lock.json"
+  ],
+  "editablePaths": [
+    "src"
+  ],
+  "expectedTests": 28,
+  "timeoutSeconds": 1800
+}

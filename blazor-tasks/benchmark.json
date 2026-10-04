@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "name": "blazor-tasks",
+  "description": "Blazor Server : session, tâches privées, UI et filtres",
+  "promptFile": "PROMPT.md",
+  "instructionFiles": [
+    "AGENTS.md",
+    "FEATURES.md"
+  ],
+  "prepareCommands": [
+    [
+      "dotnet",
+      "restore",
+      "Benchmark.slnx",
+      "--locked-mode"
+    ]
+  ],
+  "validationCommands": [
+    [
+      "dotnet",
+      "test",
+      "Benchmark.slnx",
+      "--no-restore",
+      "--logger",
+      "trx;LogFileName=acceptance.trx",
+      "--results-directory",
+      "TestResults"
+    ]
+  ],
+  "protectedPaths": [
+    "tests",
+    "benchmark.json",
+    "PROMPT.md",
+    "FEATURES.md",
+    "AGENTS.md",
+    "README.md",
+    "global.json",
+    "Directory.Build.props",
+    "Benchmark.slnx",
+    ".gitignore",
+    "src/TaskBoard/TaskBoard.csproj",
+    "src/TaskBoard/packages.lock.json"
+  ],
+  "editablePaths": [
+    "src"
+  ],
+  "expectedTests": 18,
+  "timeoutSeconds": 1800
+}

@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "name": "api-react-tasks",
+  "description": "API .NET + React : JWT, CRUD privé, interface",
+  "promptFile": "PROMPT.md",
+  "instructionFiles": [
+    "AGENTS.md",
+    "FEATURES.md"
+  ],
+  "prepareCommands": [
+    [
+      "dotnet",
+      "restore",
+      "Benchmark.slnx",
+      "--locked-mode"
+    ],
+    [
+      "npm",
+      "--prefix=frontend",
+      "ci"
+    ]
+  ],
+  "validationCommands": [
+    [
+      "dotnet",
+      "test",
+      "Benchmark.slnx",
+      "--no-restore",
+      "--logger",
+      "trx;LogFileName=acceptance.trx",
+      "--results-directory",
+      "TestResults"
+    ],
+    [
+      "npm",
+      "--prefix=frontend",
+      "run",
+      "build"
+    ],
+    [
+      "npm",
+      "--prefix=frontend",
+      "test"
+    ]
+  ],
+  "protectedPaths": [
+    "tests",
+    "benchmark.json",
+    "PROMPT.md",
+    "FEATURES.md",
+    "AGENTS.md",
+    "README.md",
+    "global.json",
+    "Directory.Build.props",
+    "Benchmark.slnx",
+    ".gitignore",
+    "frontend/tests",
+    "frontend/package.json",
+    "frontend/package-lock.json",
+    "frontend/tsconfig.json",
+    "frontend/vite.config.ts",
+    "frontend/index.html",
+    "src/TaskApi/TaskApi.csproj",
+    "src/TaskApi/packages.lock.json"
+  ],
+  "editablePaths": [
+    "src",
+    "frontend/src"
+  ],
+  "expectedTests": 35,
+  "timeoutSeconds": 1800
+}
