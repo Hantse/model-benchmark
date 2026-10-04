@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "name": "api-react-tasks",
-  "description": "API .NET + React : JWT, CRUD privé, interface",
+  "description": ".NET API + React: JWT, private CRUD, interface",
   "promptFile": "PROMPT.md",
   "instructionFiles": [
     "AGENTS.md",

@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "name": "api-blazor-fluxor",
+  "description": "Layered .NET 10 API and Blazor Fluxor: synthetic JWT, private atomic versioned work items, scoped async UI.",
+  "promptFile": "PROMPT.md",
+  "instructionFiles": [
+    "AGENTS.md",
+    "FEATURES.md",
+    "ARCHITECTURE.md"
+  ],
+  "prepareCommands": [
+    [
+      "dotnet",
+      "restore",
+      "Benchmark.slnx",
+      "--locked-mode"
+    ]
+  ],
+  "validationCommands": [
+    [
+      "dotnet",
+      "test",
+      "tests/Api.Tests/Api.Tests.csproj",
+      "--no-restore",
+      "--logger",
+      "trx;LogFileName=api.trx",
+      "--results-directory",
+      "TestResults"
+    ],
+    [
+      "dotnet",
+      "test",
+      "tests/Frontend.Tests/Frontend.Tests.csproj",
+      "--no-restore",
+      "--logger",
+      "trx;LogFileName=frontend.trx",
+      "--results-directory",
+      "TestResults"
+    ]
+  ],
+  "protectedPaths": [
+    "tests",
+    "benchmark.json",
+    "PROMPT.md",
+    "AGENTS.md",
+    "FEATURES.md",
+    "ARCHITECTURE.md",
+    "README.md",
+    "Benchmark.slnx",
+    "Directory.Build.props",
+    "global.json",
+    ".gitignore",
+    "src/Api/Api.csproj",
+    "src/Api/packages.lock.json",
+    "src/Application/Application.csproj",
+    "src/Application/packages.lock.json",
+    "src/Domain/Domain.csproj",
+    "src/Domain/packages.lock.json",
+    "src/Frontend/Frontend.csproj",
+    "src/Frontend/packages.lock.json",
+    "src/Infrastructure/Infrastructure.csproj",
+    "src/Infrastructure/packages.lock.json"
+  ],
+  "editablePaths": [
+    "src"
+  ],
+  "expectedTests": 82,
+  "timeoutSeconds": 3600
+}

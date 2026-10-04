@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "name": "api-jwt",
-  "description": "API .NET : JWT, tâches privées, rôle admin",
+  "description": ".NET API: JWT, private tasks, admin role",
   "promptFile": "PROMPT.md",
   "instructionFiles": [
     "AGENTS.md",

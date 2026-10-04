@@ -1,0 +1,13 @@
+using System.Collections.Immutable;
+using Benchmark.Frontend.Api;
+namespace Benchmark.Frontend.Store;
+public sealed record LoginRequested(Guid RequestId, string Email, string Password);
+public sealed record LoginSucceeded(Guid RequestId, long SessionVersion, string AccessToken);
+public sealed record LoadRequested(Guid RequestId);
+public sealed record AddRequested(Guid RequestId, string Title, string Status);
+public sealed record UpdateRequested(Guid RequestId, Guid Id, string Title, string Status, int ExpectedVersion);
+public sealed record DeleteRequested(Guid RequestId, Guid Id, int ExpectedVersion);
+public sealed record ItemsLoaded(Guid RequestId, long SessionVersion, ImmutableArray<WorkItemView> Items);
+public sealed record OperationFailed(Guid RequestId, long SessionVersion, int Status, string Message);
+public sealed record FilterChanged(string Filter);
+public sealed record LogoutRequested;

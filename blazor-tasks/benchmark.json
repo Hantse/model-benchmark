@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "name": "blazor-tasks",
-  "description": "Blazor Server : session, tâches privées, UI et filtres",
+  "description": "Blazor Server: session, private tasks, UI and filters",
   "promptFile": "PROMPT.md",
   "instructionFiles": [
     "AGENTS.md",

@@ -1,0 +1,1 @@
+<Solution><Project Path="src/Domain/Domain.csproj" /><Project Path="src/Application/Application.csproj" /><Project Path="src/Infrastructure/Infrastructure.csproj" /><Project Path="src/Api/Api.csproj" /><Project Path="src/Frontend/Frontend.csproj" /><Project Path="tests/Api.Tests/Api.Tests.csproj" /><Project Path="tests/Frontend.Tests/Frontend.Tests.csproj" /></Solution>

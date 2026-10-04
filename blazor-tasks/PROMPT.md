@@ -1,8 +1,8 @@
-# Mission : Blazor Server : session, tâches privées, UI et filtres
+# Task: Blazor Server: session, private tasks, UI and filters
 
-Le dépôt compile, mais les fonctionnalités décrites dans FEATURES.md sont absentes.
-Implémente exactement ses trois fonctionnalités, en préservant les régressions.
-Lis AGENTS.md puis FEATURES.md. Tu peux lancer les tests et corriger dans le budget
-de 30 minutes. Il faut obtenir tous les tests au vert sans modifier l'évaluation.
-Livrer du code fonctionnel, pas une proposition ni des mocks de la solution.
-Tu n'as besoin d'aucun compte, service externe ou secret réel.
+The repository compiles, but the features described in FEATURES.md are missing.
+Implement exactly its three features while preserving existing behavior.
+Read AGENTS.md, then FEATURES.md. You may run tests and fix failures within the
+30-minute budget. All tests must pass without changing the evaluation.
+Deliver working code, rather than a proposal or mocked implementations.
+You do not need any account, external service or real secret.

@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "dependencies": {
+    "net10.0": {
+      "Fluxor.Blazor.Web": {
+        "type": "Direct",
+        "requested": "[6.11.0, )",
+        "resolved": "6.11.0",
+        "contentHash": "JdND7CBamv72lpBFa2iheMuh4amDcWc4rl+ltHaNppj5YLBKbD5p3U5q/K3n2NhgTDE/bwcwsUnOUydGQk6ibg==",
+        "dependencies": {
+          "Fluxor": "6.11.0"
+        }
+      },
+      "Microsoft.AspNetCore.App.Internal.Assets": {
+        "type": "Direct",
+        "requested": "[10.0.10, )",
+        "resolved": "10.0.10",
+        "contentHash": "8k0KoYKvNrSqP8E3oDJMBVKavlTEE6BacdLGtEDcxv9Hz0XxWFkD6JdLJsxXUlGeAfZ6YfvWmxKenl73qeCTSA=="
+      },
+      "Fluxor": {
+        "type": "Transitive",
+        "resolved": "6.11.0",
+        "contentHash": "UP8iahTHOk1oeht5psBzyUiC91mkWgJBvSn/5mhZFvHkR8rJnEtScqW6n2SxmwiH6/mvZMpqANLqg4Ib6ToQ1Q=="
+      }
+    }
+  }
+}

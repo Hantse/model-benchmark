@@ -1,0 +1,13 @@
+using Benchmark.Frontend.Api;
+using Benchmark.Frontend.Components;
+using Benchmark.Frontend.Store;
+using Fluxor;
+var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddRazorComponents().AddInteractiveServerComponents();
+builder.Services.AddFluxor(options => options.ScanAssemblies(typeof(BoardState).Assembly).WithLifetime(StoreLifetime.Scoped));
+builder.Services.AddHttpClient<IWorkItemApi, WorkItemApiClient>(client => client.BaseAddress = new Uri(builder.Configuration["Backend:BaseUrl"] ?? "http://127.0.0.1:5080"));
+var app = builder.Build();
+app.UseAntiforgery();
+app.MapGet("/health", () => Results.Ok(new { status = "ok" }));
+app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
+app.Run();

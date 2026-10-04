@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "dependencies": {
+    "net10.0": {
+      "workboard.application": {
+        "type": "Project",
+        "dependencies": {
+          "WorkBoard.Domain": "[1.0.0, )"
+        }
+      },
+      "workboard.domain": {
+        "type": "Project"
+      }
+    }
+  }
+}

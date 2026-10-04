@@ -1,11 +1,15 @@
 # api-react-tasks
 
-Tester autonome, destiné à être poussé dans son propre dépôt Git. Le squelette est
-compilable ; les tests de fonctionnalités sont volontairement rouges jusqu'à
-résolution de PROMPT.md. 35 tests obligatoires, aucun skip autorisé.
+A self-contained tester in the shared model-benchmark repository. The skeleton
+compiles; feature tests intentionally fail until PROMPT.md is implemented.
+35 mandatory tests; no skipped tests are allowed.
 
-Prérequis : SDK .NET 10.0.302 (latestPatch), Linux ou Windows.
-Frontend : Node >=22.12 et npm, dépendances figées par package-lock.json.
+Requirements: .NET SDK 10.0.302 (latestPatch), Linux or Windows.
+Frontend: Node >=22.12 and npm, with dependencies pinned by package-lock.json.
+
+Register `https://github.com/Hantse/model-benchmark.git`, an exact commit SHA,
+and `api-react-tasks/benchmark.json`. The worker uses this folder as the exclusive
+workspace root. Run the following local commands from this folder.
 
 ```sh
 dotnet restore Benchmark.slnx --locked-mode
@@ -19,13 +23,15 @@ npm --prefix frontend run build
 npm --prefix frontend test
 ```
 
-Essai manuel : configuration Jwt de FEATURES.md, puis dotnet run --project src/TaskApi --urls http://127.0.0.1:5080.
-Dans un second terminal : npm --prefix frontend run dev.
-Rapport .NET TRX : TestResults/acceptance.trx.
-Rapport React JUnit : TestResults/frontend.xml.
+Manual run: set the Jwt configuration described in FEATURES.md, then 
+`dotnet run --project src/TaskApi --urls http://127.0.0.1:5080`.
+In a second terminal: `npm --prefix frontend run dev`.
 
-Le manifest est le contrat d'évaluation v1. Le contrôleur fixe URL + commit ;
-cloner ce commit dans un dossier neuf pour chaque tentative. Les tests visibles
-servent aussi au développement ; l'évaluateur final reprend leurs versions
-protégées. Ne publier aucune solution de référence dans l'historique de ce dépôt.
-Les comptes et clés décrits sont des données synthétiques de benchmark.
+.NET TRX report: `TestResults/acceptance.trx`.
+React JUnit report: `TestResults/frontend.xml`.
+
+The manifest is the v1 evaluation contract. The controller pins the URL and commit;
+clone that commit into a new directory for every attempt. The visible tests also
+support development; the final evaluator uses their protected versions.
+Do not publish any reference solution in this repository's history.
+The accounts and keys described here are synthetic benchmark data.
