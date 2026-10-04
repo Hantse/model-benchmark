@@ -16,7 +16,7 @@ dotnet build Benchmark.slnx --no-restore
 dotnet test Benchmark.slnx --no-restore --logger "trx;LogFileName=acceptance.trx" --results-directory TestResults
 ```
 
-Manual run: set the Jwt configuration described in FEATURES.md, then 
+Manual run: set the Jwt configuration described in FEATURES.md, then
 `dotnet run --project src/TaskApi --urls http://127.0.0.1:5080`.
 
 .NET TRX report: `TestResults/acceptance.trx`.

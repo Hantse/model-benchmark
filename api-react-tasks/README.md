@@ -23,7 +23,7 @@ npm --prefix frontend run build
 npm --prefix frontend test
 ```
 
-Manual run: set the Jwt configuration described in FEATURES.md, then 
+Manual run: set the Jwt configuration described in FEATURES.md, then
 `dotnet run --project src/TaskApi --urls http://127.0.0.1:5080`.
 In a second terminal: `npm --prefix frontend run dev`.
 
