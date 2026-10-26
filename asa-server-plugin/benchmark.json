@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "name": "asa-server-plugin",
+  "description": "C++20 ASA server-plugin offline contract: lifecycle, permission-gated rewards and deterministic cooldowns (portable fake host, not an ASA DLL)",
+  "promptFile": "PROMPT.md",
+  "instructionFiles": ["AGENTS.md", "FEATURES.md", "PROVENANCE.md"],
+  "prepareCommands": [
+    ["cmake", "-S", ".", "-B", "obj", "-DCMAKE_BUILD_TYPE=Release"]
+  ],
+  "validationCommands": [
+    ["cmake", "--build", "obj", "--config", "Release", "--parallel", "2"],
+    ["python3", "tests/run_tests.py"]
+  ],
+  "protectedPaths": [
+    "include", "tests", "CMakeLists.txt", "benchmark.json", "PROMPT.md",
+    "FEATURES.md", "AGENTS.md", "README.md", "PROVENANCE.md", ".gitignore"
+  ],
+  "editablePaths": ["src"],
+  "expectedTests": 36,
+  "timeoutSeconds": 3600
+}

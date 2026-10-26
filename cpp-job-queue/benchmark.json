@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "name": "cpp-job-queue",
+  "description": "C++20: bounded priority queue, retries and deterministic job snapshots",
+  "promptFile": "PROMPT.md",
+  "instructionFiles": ["AGENTS.md", "FEATURES.md"],
+  "prepareCommands": [["cmake", "-S", ".", "-B", "obj", "-DCMAKE_BUILD_TYPE=Release"]],
+  "validationCommands": [
+    ["cmake", "--build", "obj", "--config", "Release", "--parallel", "2"],
+    ["python3", "tests/run_tests.py"]
+  ],
+  "protectedPaths": [
+    "include", "tests", "CMakeLists.txt", ".gitignore", "benchmark.json",
+    "PROMPT.md", "FEATURES.md", "AGENTS.md", "README.md"
+  ],
+  "editablePaths": ["src"],
+  "expectedTests": 36,
+  "timeoutSeconds": 3600
+}

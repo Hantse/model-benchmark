@@ -1,6 +1,6 @@
 # Model Benchmark Exercises
 
-This repository contains five self-contained coding exercises for evaluating
+This repository contains seven self-contained coding exercises for evaluating
 models on software development tasks. Each exercise includes a starter project,
 English instructions, acceptance tests and a `benchmark.json` manifest.
 
@@ -18,6 +18,14 @@ mandatory test pass without changing the protected tests or contracts.
 | [api-react-tasks](api-react-tasks/README.md) | ASP.NET Core API + React | JWT authentication, private task CRUD, React login and task workflow | 35 | 30 minutes |
 | [api-react-layered](api-react-layered/README.md) | Layered ASP.NET Core API + React / Redux Toolkit | JWT authentication, private versioned work items, centralized frontend state and HTTP workflow | 73 | 60 minutes |
 | [api-blazor-fluxor](api-blazor-fluxor/README.md) | Layered ASP.NET Core API + Blazor / Fluxor | JWT authentication, private versioned work items, circuit-scoped frontend state and HTTP workflow | 82 | 60 minutes |
+| [cpp-job-queue](cpp-job-queue/README.md) | C++20 / CMake / CTest | Bounded priority queue, lifecycle/retries, deterministic snapshots | 36 | 60 minutes |
+| [asa-server-plugin](asa-server-plugin/README.md) | C++20 / offline ASA server-plugin logic | Safe chat lifecycle, permission-gated rewards, per-player cooldowns | 36 | 60 minutes |
+
+The two C++ exercises were added on 26 October 2026. Select a commit containing
+the chosen folder. The ASA exercise uses a portable benchmark host and
+fake clock; it does not build or qualify a loadable ASA DLL or a DevKit mod.
+Both require a C++20 compiler, CMake/CTest 3.24+ and Python 3.10+. They have no
+downloaded libraries or test frameworks.
 
 The three basic exercises focus on authentication/session handling, ownership
 and a small task workflow. `blazor-tasks` uses a local session per Blazor circuit;
@@ -35,7 +43,7 @@ asynchronous effects. React uses Redux Toolkit and react-redux; Blazor uses
 Fluxor with a separate store per circuit. Tests cover pending operations, errors,
 logout, unauthorized responses and stale asynchronous completions.
 
-There are **236 mandatory tests** across the repository. Each exercise is an
+There are **308 mandatory tests** across the repository. Each exercise is an
 independent benchmark; select and evaluate one folder per run.
 
 ## Files inside each exercise
@@ -92,6 +100,8 @@ blazor-tasks/benchmark.json
 api-react-tasks/benchmark.json
 api-react-layered/benchmark.json
 api-blazor-fluxor/benchmark.json
+cpp-job-queue/benchmark.json
+asa-server-plugin/benchmark.json
 ```
 
 The worker uses the selected manifest's parent folder as the exclusive workspace
@@ -106,7 +116,7 @@ instance.
 
 A successful solution must discover and pass every expected test, with no skipped
 tests and successful validation commands. Reports use TRX for .NET and JUnit for
-React. Compilation alone is not a passing result; a setup failure is an
+React and C++. Compilation alone is not a passing result; a setup failure is an
 environment incident rather than a feature-test result.
 
 Keep generated outputs (`bin`, `obj`, `node_modules`, `dist`, `TestResults`) and
