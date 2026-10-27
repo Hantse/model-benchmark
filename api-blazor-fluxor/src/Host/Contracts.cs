@@ -1,4 +1,4 @@
-namespace Benchmark.Api;
+namespace Benchmark.Host;
 public sealed record LoginInput(string Email, string Password);
 public sealed record LoginResult(string AccessToken);
 public sealed record CreateInput(string Title, string Status = "Todo");

@@ -1,7 +1,9 @@
 using Benchmark.Domain;
-namespace Benchmark.Application;
-// Replace the stubs while retaining the repository abstraction and public contract.
-public sealed class WorkItemService(IWorkItemRepository repository)
+
+namespace Benchmark.Infrastructure;
+
+// Implement validation and ownership through the injected repository.
+public sealed class WorkItemService(IWorkItemRepository repository) : IWorkItemService
 {
     public Task<IReadOnlyList<WorkItem>> ListAsync(string owner, WorkStatus? status = null, CancellationToken ct = default) => throw new NotImplementedException();
     public Task<WorkItem> AddAsync(string owner, string title, WorkStatus status, CancellationToken ct = default) => throw new NotImplementedException();

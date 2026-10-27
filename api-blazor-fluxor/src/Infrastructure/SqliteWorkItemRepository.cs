@@ -1,9 +1,12 @@
-using Benchmark.Application;
 using Benchmark.Domain;
+
 namespace Benchmark.Infrastructure;
-// Process-local persistence; atomic compare-and-swap is deliberately missing.
-public sealed class InMemoryWorkItemRepository : IWorkItemRepository
+
+// Implement real SQLite persistence and SQL-level compare-and-swap.
+// Separate repository instances using this connection string must share durable data.
+public sealed class SqliteWorkItemRepository(string connectionString) : IWorkItemRepository
 {
+    public Task InitializeAsync(CancellationToken ct = default) => throw new NotImplementedException();
     public Task<IReadOnlyList<WorkItem>> ListAsync(string owner, CancellationToken ct = default) => throw new NotImplementedException();
     public Task<WorkItem?> FindAsync(Guid id, CancellationToken ct = default) => throw new NotImplementedException();
     public Task AddAsync(WorkItem item, CancellationToken ct = default) => throw new NotImplementedException();

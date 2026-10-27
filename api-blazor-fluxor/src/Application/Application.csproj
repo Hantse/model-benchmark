@@ -1,1 +1,0 @@
-<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><AssemblyName>Benchmark.Application</AssemblyName></PropertyGroup><ItemGroup><ProjectReference Include="../Domain/Domain.csproj" /></ItemGroup></Project>

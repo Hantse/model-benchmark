@@ -3,7 +3,7 @@ using System.Net;
 using System.Net.Http.Json;
 using System.Security.Claims;
 using System.Text;
-using Benchmark.Api;
+using Benchmark.Host;
 using Microsoft.IdentityModel.Tokens;
 using Xunit;
 namespace Benchmark.Tests;
@@ -39,4 +39,60 @@ public sealed class HttpTests
     [Fact] public async Task Valid_delete_removes_item_and_repeat_is_404() {using var s=new ApiFixture();using var c=await s.Login();var a=await ApiFixture.Add(c);Assert.Equal(HttpStatusCode.NoContent,(await c.DeleteAsync($"/api/work-items/{a.Id}?expectedVersion=1")).StatusCode);Assert.Equal(HttpStatusCode.NotFound,(await c.DeleteAsync($"/api/work-items/{a.Id}?expectedVersion=1")).StatusCode);Assert.Empty((await c.GetFromJsonAsync<ItemDto[]>("/api/work-items"))!);}
     [Fact] public async Task Foreign_ids_are_404_even_with_stale_version() {using var s=new ApiFixture();using var a=await s.Login();var t=await ApiFixture.Add(a);using var b=await s.Login("bob@example.test","Bob!234");Assert.Empty((await b.GetFromJsonAsync<ItemDto[]>("/api/work-items"))!);Assert.Equal(HttpStatusCode.NotFound,(await b.PutAsJsonAsync($"/api/work-items/{t.Id}",new UpdateInput("Stolen","Done",999))).StatusCode);Assert.Equal(HttpStatusCode.NotFound,(await b.DeleteAsync($"/api/work-items/{t.Id}?expectedVersion=999")).StatusCode);Assert.Equal(t,(await a.GetFromJsonAsync<ItemDto[]>("/api/work-items"))!.Single());}
     [Fact] public async Task Concurrent_updates_allow_exactly_one_version_winner() {using var s=new ApiFixture();using var c=await s.Login();var a=await ApiFixture.Add(c);var replies=await Task.WhenAll(c.PutAsJsonAsync($"/api/work-items/{a.Id}",new UpdateInput("First","Done",1)),c.PutAsJsonAsync($"/api/work-items/{a.Id}",new UpdateInput("Second","InProgress",1)));Assert.Equal(1,replies.Count(r=>r.StatusCode==HttpStatusCode.OK));Assert.Equal(1,replies.Count(r=>r.StatusCode==HttpStatusCode.Conflict));Assert.Equal(2,(await c.GetFromJsonAsync<ItemDto[]>("/api/work-items"))!.Single().Version);}
+    [Fact]
+    public async Task Work_items_survive_a_host_restart_using_the_configured_SQLite_file()
+    {
+        var directory = Path.Combine(Path.GetTempPath(), "benchmark-restart-" + Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(directory);
+        var connection = $"Data Source={Path.Combine(directory, "persisted.db")};Pooling=False";
+        try
+        {
+            ItemDto original;
+            using (var first = new ApiFixture(connection))
+            using (var alice = await first.Login()) original = await ApiFixture.Add(alice, "Persisted across hosts", "InProgress");
+            using (var second = new ApiFixture(connection))
+            {
+                using var alice = await second.Login();
+                Assert.Equal(new[] { original }, (await alice.GetFromJsonAsync<ItemDto[]>("/api/work-items"))!);
+                using var bob = await second.Login("bob@example.test", "Bob!234");
+                Assert.Empty((await bob.GetFromJsonAsync<ItemDto[]>("/api/work-items"))!);
+            }
+            var bytes = await File.ReadAllBytesAsync(Path.Combine(directory, "persisted.db"));
+            Assert.Equal("SQLite format 3\0", Encoding.ASCII.GetString(bytes, 0, 16));
+        }
+        finally { Directory.Delete(directory, recursive: true); }
+    }
+    [Fact]
+    public async Task Public_responses_exclude_owner_and_reject_client_owner_injection()
+    {
+        using var host = new ApiFixture(); using var alice = await host.Login();
+        var created = await alice.PostAsJsonAsync("/api/work-items", new { title = "Private", status = "Todo", owner = "bob@example.test" });
+        Assert.Equal(HttpStatusCode.Created, created.StatusCode);
+        using var body = System.Text.Json.JsonDocument.Parse(await created.Content.ReadAsStringAsync());
+        Assert.False(body.RootElement.TryGetProperty("owner", out _));
+        Assert.Single((await alice.GetFromJsonAsync<ItemDto[]>("/api/work-items"))!);
+        using var bob = await host.Login("bob@example.test", "Bob!234");
+        Assert.Empty((await bob.GetFromJsonAsync<ItemDto[]>("/api/work-items"))!);
+    }
+    [Fact]
+    public async Task Missing_delete_version_is_400_and_keeps_data()
+    {
+        using var host = new ApiFixture(); using var alice = await host.Login(); var item = await ApiFixture.Add(alice);
+        Assert.Equal(HttpStatusCode.BadRequest, (await alice.DeleteAsync($"/api/work-items/{item.Id}")).StatusCode);
+        Assert.Equal(new[] { item }, (await alice.GetFromJsonAsync<ItemDto[]>("/api/work-items"))!);
+    }
+    [Fact]
+    public async Task Missing_update_version_is_400_and_keeps_data()
+    {
+        using var host = new ApiFixture(); using var alice = await host.Login(); var item = await ApiFixture.Add(alice);
+        Assert.Equal(HttpStatusCode.BadRequest, (await alice.PutAsJsonAsync($"/api/work-items/{item.Id}", new { title = "changed", status = "Done" })).StatusCode);
+        Assert.Equal(new[] { item }, (await alice.GetFromJsonAsync<ItemDto[]>("/api/work-items"))!);
+    }
+    [Theory]
+    [InlineData("todo")][InlineData("DONE")][InlineData("0")]
+    public async Task Filters_require_exact_named_statuses(string filter)
+    {
+        using var host = new ApiFixture(); using var alice = await host.Login();
+        Assert.Equal(HttpStatusCode.BadRequest, (await alice.GetAsync("/api/work-items?status=" + filter)).StatusCode);
+    }
 }

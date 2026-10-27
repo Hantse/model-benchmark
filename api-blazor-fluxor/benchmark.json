@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "name": "api-blazor-fluxor",
-  "description": "Layered .NET 10 API and Blazor Fluxor: synthetic JWT, private atomic versioned work items, scoped async UI.",
+  "description": "Domain / Infrastructure services + SQLite / Business CQRS / Host MVC with OneOf; synthetic JWT, private atomic versioned work items and real scoped Blazor Fluxor without locks.",
   "promptFile": "PROMPT.md",
   "instructionFiles": [
     "AGENTS.md",
@@ -50,10 +50,10 @@
     "Directory.Build.props",
     "global.json",
     ".gitignore",
-    "src/Api/Api.csproj",
-    "src/Api/packages.lock.json",
-    "src/Application/Application.csproj",
-    "src/Application/packages.lock.json",
+    "src/Host/Host.csproj",
+    "src/Host/packages.lock.json",
+    "src/Business/Business.csproj",
+    "src/Business/packages.lock.json",
     "src/Domain/Domain.csproj",
     "src/Domain/packages.lock.json",
     "src/Frontend/Frontend.csproj",
@@ -64,6 +64,6 @@
   "editablePaths": [
     "src"
   ],
-  "expectedTests": 82,
+  "expectedTests": 213,
   "timeoutSeconds": 3600
 }
