@@ -3,4 +3,56 @@
 @inject IState<BoardState> Board
 @inject IDispatcher Dispatcher
 <h1>Work Board</h1>
-<p>Benchmark starter: implement the three features in FEATURES.md.</p>
+@if (Board.Value.Error is not null)
+{
+    <div role="alert" data-testid="error">@Board.Value.Error</div>
+}
+@if (Board.Value.AccessToken is null)
+{
+    <form @onsubmit="Login">
+        <label>Email <input data-testid="email" type="email" @bind="Email" /></label>
+        <label>Password <input data-testid="password" type="password" @bind="Password" /></label>
+        <button data-testid="login" type="submit" disabled="@Board.Value.Pending">Login</button>
+    </form>
+}
+else
+{
+    <form @onsubmit="Create">
+        <label>Title <input data-testid="title" @bind="NewTitle" /></label>
+        <label>Status <select data-testid="create-status" @bind="NewStatus"><option>Todo</option><option>InProgress</option><option>Done</option></select></label>
+        <button data-testid="add" type="submit" disabled="@Board.Value.Pending">Add</button>
+    </form>
+    <label>Filter <select data-testid="filter" @bind="Filter"><option>All</option><option>Todo</option><option>InProgress</option><option>Done</option></select></label>
+    <div data-testid="items">
+        @foreach (var item in VisibleItems)
+        {
+            <div data-testid="item-row">
+                <span>@item.Title</span>
+                <span>@item.Status</span>
+                <span>@item.Version</span>
+                <input data-testid="edit-title" value="@EditTitle(item)" @onchange="e => EditTitles[item.Id] = e.Value?.ToString() ?? item.Title" />
+                <select data-testid="edit-status" value="@EditStatus(item)" @onchange="e => EditStatuses[item.Id] = e.Value?.ToString() ?? item.Status"><option>Todo</option><option>InProgress</option><option>Done</option></select>
+                <button data-testid="save" @onclick="() => Save(item)" disabled="@Board.Value.Pending">Save</button>
+                <button data-testid="delete" @onclick="() => Delete(item)" disabled="@Board.Value.Pending">Delete</button>
+            </div>
+        }
+    </div>
+    <button data-testid="logout" @onclick="Logout">Logout</button>
+}
+@code {
+    private string Email = "";
+    private string Password = "";
+    private string NewTitle = "";
+    private string NewStatus = "Todo";
+    private string Filter = "All";
+    private readonly Dictionary<Guid, string> EditTitles = new();
+    private readonly Dictionary<Guid, string> EditStatuses = new();
+    private IEnumerable<WorkItemView> VisibleItems => Board.Value.Filter == "All" ? Board.Value.Items : Board.Value.Items.Where(i => i.Status == Board.Value.Filter);
+    private string EditTitle(WorkItemView item) => EditTitles.TryGetValue(item.Id, out var v) ? v : item.Title;
+    private string EditStatus(WorkItemView item) => EditStatuses.TryGetValue(item.Id, out var v) ? v : item.Status;
+    private void Login() => Dispatcher.Dispatch(new LoginRequested(Guid.NewGuid(), Email, Password));
+    private void Create() { Dispatcher.Dispatch(new AddRequested(Guid.NewGuid(), NewTitle, NewStatus)); NewTitle = ""; }
+    private void Save(WorkItemView item) => Dispatcher.Dispatch(new UpdateRequested(Guid.NewGuid(), item.Id, EditTitles.GetValueOrDefault(item.Id, item.Title), EditStatuses.GetValueOrDefault(item.Id, item.Status), item.Version));
+    private void Delete(WorkItemView item) => Dispatcher.Dispatch(new DeleteRequested(Guid.NewGuid(), item.Id, item.Version));
+    private void Logout() => Dispatcher.Dispatch(new LogoutRequested());
+}
