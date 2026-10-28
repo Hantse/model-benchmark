@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 1,
+  "name": "asa-server-plugin-advanced",
+  "description": "C++20 offline ASA plugin: atomic lifecycle, uncertain reward reconciliation and replay-safe recovery",
+  "promptFile": "PROMPT.md",
+  "instructionFiles": [
+    "AGENTS.md",
+    "FEATURES.md",
+    "PROVENANCE.md"
+  ],
+  "prepareCommands": [
+    [
+      "cmake",
+      "-S",
+      ".",
+      "-B",
+      "obj",
+      "-DCMAKE_BUILD_TYPE=Release"
+    ]
+  ],
+  "validationCommands": [
+    [
+      "cmake",
+      "--build",
+      "obj",
+      "--config",
+      "Release",
+      "--parallel",
+      "2"
+    ],
+    [
+      "python3",
+      "tests/run_tests.py"
+    ]
+  ],
+  "protectedPaths": [
+    "include",
+    "tests",
+    "CMakeLists.txt",
+    ".gitignore",
+    "benchmark.json",
+    "PROMPT.md",
+    "FEATURES.md",
+    "AGENTS.md",
+    "README.md",
+    "PROVENANCE.md"
+  ],
+  "editablePaths": [
+    "src"
+  ],
+  "expectedTests": 108,
+  "timeoutSeconds": 3600
+}

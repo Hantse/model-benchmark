@@ -1,6 +1,6 @@
 # Model Benchmark Exercises
 
-This repository contains eight self-contained coding exercises for evaluating
+This repository contains nine self-contained coding exercises for evaluating
 models on software development tasks. Each exercise includes a starter project,
 English instructions, acceptance tests and a `benchmark.json` manifest.
 
@@ -21,6 +21,7 @@ mandatory test pass without changing the protected tests or contracts.
 | [cpp-job-queue](cpp-job-queue/README.md) | C++20 / CMake / CTest | Bounded priority queue, lifecycle/retries, deterministic snapshots | 36 | 60 minutes |
 | [cpp-job-queue-advanced](cpp-job-queue-advanced/README.md) | C++20 / CMake / CTest | Atomic dependency batches, fenced leases/retries, validated checkpoint recovery | 108 | 60 minutes |
 | [asa-server-plugin](asa-server-plugin/README.md) | C++20 / offline ASA server-plugin logic | Safe chat lifecycle, permission-gated rewards, per-player cooldowns | 36 | 60 minutes |
+| [asa-server-plugin-advanced](asa-server-plugin-advanced/README.md) | C++20 / offline ASA server-plugin logic | Atomic owned lifecycle, uncertain reward reconciliation, replay-safe snapshots | 108 | 60 minutes |
 
 The two C++ exercises were added on 26 October 2026. Select a commit containing
 the chosen folder. The ASA exercise uses a portable benchmark host and
@@ -32,6 +33,11 @@ The advanced queue, added on 28 October 2026, is independent of V1. Its 108
 tests triple V1's population and add interacting graph/time/recovery rules.
 This is not a measured factor of three in model difficulty. Select an exact
 published commit containing its folder before registering or running it.
+
+The advanced ASA plugin is a separate successor with 108 tests. It combines
+owned multi-registration rollback, stale-callback protection, idempotent reward
+reconciliation and validated restart state. Its Host is a synthetic portable
+contract; passing does not qualify a real ASA DLL or production economy.
 
 The three basic exercises focus on authentication/session handling, ownership
 and a small task workflow. `blazor-tasks` uses a local session per Blazor circuit;
@@ -49,7 +55,7 @@ asynchronous effects. React uses Redux Toolkit and react-redux; Blazor uses
 Fluxor with a separate store per circuit. Tests cover pending operations, errors,
 logout, unauthorized responses and stale asynchronous completions.
 
-There are **547 mandatory tests** across the repository. Each exercise is an
+There are **655 mandatory tests** across the repository. Each exercise is an
 independent benchmark; select and evaluate one folder per run.
 
 ## Files inside each exercise
@@ -109,6 +115,7 @@ api-blazor-fluxor/benchmark.json
 cpp-job-queue/benchmark.json
 cpp-job-queue-advanced/benchmark.json
 asa-server-plugin/benchmark.json
+asa-server-plugin-advanced/benchmark.json
 ```
 
 The worker uses the selected manifest's parent folder as the exclusive workspace
