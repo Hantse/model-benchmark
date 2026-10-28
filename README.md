@@ -1,6 +1,6 @@
 # Model Benchmark Exercises
 
-This repository contains seven self-contained coding exercises for evaluating
+This repository contains eight self-contained coding exercises for evaluating
 models on software development tasks. Each exercise includes a starter project,
 English instructions, acceptance tests and a `benchmark.json` manifest.
 
@@ -17,8 +17,9 @@ mandatory test pass without changing the protected tests or contracts.
 | [blazor-tasks](blazor-tasks/README.md) | Blazor Server | Circuit-scoped login session, private tasks and filters, accessible task UI | 18 | 30 minutes |
 | [api-react-tasks](api-react-tasks/README.md) | ASP.NET Core API + React | JWT authentication, private task CRUD, React login and task workflow | 35 | 30 minutes |
 | [api-react-layered](api-react-layered/README.md) | Layered ASP.NET Core API + React / Redux Toolkit | JWT authentication, private versioned work items, centralized frontend state and HTTP workflow | 73 | 60 minutes |
-| [api-blazor-fluxor](api-blazor-fluxor/README.md) | Layered ASP.NET Core API + Blazor / Fluxor | JWT authentication, private versioned work items, circuit-scoped frontend state and HTTP workflow | 82 | 60 minutes |
+| [api-blazor-fluxor](api-blazor-fluxor/README.md) | Domain / Infrastructure / Business CQRS / Host MVC + Blazor / Fluxor | JWT authentication, SQLite versioned work items, OneOf controllers and circuit-scoped Fluxor workflow | 213 | 60 minutes |
 | [cpp-job-queue](cpp-job-queue/README.md) | C++20 / CMake / CTest | Bounded priority queue, lifecycle/retries, deterministic snapshots | 36 | 60 minutes |
+| [cpp-job-queue-advanced](cpp-job-queue-advanced/README.md) | C++20 / CMake / CTest | Atomic dependency batches, fenced leases/retries, validated checkpoint recovery | 108 | 60 minutes |
 | [asa-server-plugin](asa-server-plugin/README.md) | C++20 / offline ASA server-plugin logic | Safe chat lifecycle, permission-gated rewards, per-player cooldowns | 36 | 60 minutes |
 
 The two C++ exercises were added on 26 October 2026. Select a commit containing
@@ -26,6 +27,11 @@ the chosen folder. The ASA exercise uses a portable benchmark host and
 fake clock; it does not build or qualify a loadable ASA DLL or a DevKit mod.
 Both require a C++20 compiler, CMake/CTest 3.24+ and Python 3.10+. They have no
 downloaded libraries or test frameworks.
+
+The advanced queue, added on 28 October 2026, is independent of V1. Its 108
+tests triple V1's population and add interacting graph/time/recovery rules.
+This is not a measured factor of three in model difficulty. Select an exact
+published commit containing its folder before registering or running it.
 
 The three basic exercises focus on authentication/session handling, ownership
 and a small task workflow. `blazor-tasks` uses a local session per Blazor circuit;
@@ -43,7 +49,7 @@ asynchronous effects. React uses Redux Toolkit and react-redux; Blazor uses
 Fluxor with a separate store per circuit. Tests cover pending operations, errors,
 logout, unauthorized responses and stale asynchronous completions.
 
-There are **308 mandatory tests** across the repository. Each exercise is an
+There are **547 mandatory tests** across the repository. Each exercise is an
 independent benchmark; select and evaluate one folder per run.
 
 ## Files inside each exercise
@@ -101,6 +107,7 @@ api-react-tasks/benchmark.json
 api-react-layered/benchmark.json
 api-blazor-fluxor/benchmark.json
 cpp-job-queue/benchmark.json
+cpp-job-queue-advanced/benchmark.json
 asa-server-plugin/benchmark.json
 ```
 
