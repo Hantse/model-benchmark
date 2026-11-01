@@ -3,4 +3,51 @@
 @inject IState<BoardState> Board
 @inject IDispatcher Dispatcher
 <h1>Work Board</h1>
-<p>Benchmark starter: implement the three features in FEATURES.md.</p>
+@if (Board.Value.Error is not null)
+{
+    <div role="alert">@Board.Value.Error</div>
+}
+@if (Board.Value.AccessToken is null)
+{
+    <form @onsubmit="OnLogin">
+        <label>Email <input data-testid="email" type="email" @bind="email" /></label>
+        <label>Password <input data-testid="password" type="password" @bind="password" /></label>
+        <button data-testid="login" type="submit" disabled="@Board.Value.Pending">Login</button>
+    </form>
+}
+else
+{
+    <form @onsubmit="OnAdd">
+        <label>Title <input data-testid="title" @bind="newTitle" /></label>
+        <label>Status <select data-testid="create-status" @bind="newStatus"><option>Todo</option><option>InProgress</option><option>Done</option></select></label>
+        <button data-testid="add" type="submit" disabled="@Board.Value.Pending">Add</button>
+    </form>
+    <label>Filter <select data-testid="filter" @bind="filter"><option>All</option><option>Todo</option><option>InProgress</option><option>Done</option></select></label>
+    <div data-testid="items">
+        @foreach (var item in Board.Value.Items.Where(i => Board.Value.Filter == "All" || i.Status == Board.Value.Filter))
+        {
+            <div data-testid="item-row">
+                <span>@item.Title</span>
+                <span>@item.Status</span>
+                <span>@item.Version</span>
+                <input data-testid="edit-title" @bind="item.Title" />
+                <select data-testid="edit-status" @bind="item.Status"><option>Todo</option><option>InProgress</option><option>Done</option></select>
+                <button data-testid="save" @onclick="() => OnSave(item)" disabled="@Board.Value.Pending">Save</button>
+                <button data-testid="delete" @onclick="() => OnDelete(item)" disabled="@Board.Value.Pending">Delete</button>
+            </div>
+        }
+    </div>
+    <button data-testid="logout" @onclick="OnLogout">Logout</button>
+}
+@code {
+    private string email = "";
+    private string password = "";
+    private string newTitle = "";
+    private string newStatus = "Todo";
+    private string filter = "All";
+    private void OnLogin() => Dispatcher.Dispatch(new LoginRequested(Guid.NewGuid(), email, password));
+    private void OnAdd() => Dispatcher.Dispatch(new AddRequested(Guid.NewGuid(), newTitle, newStatus));
+    private void OnSave(WorkItemView item) => Dispatcher.Dispatch(new UpdateRequested(Guid.NewGuid(), item.Id, item.Title, item.Status, item.Version));
+    private void OnDelete(WorkItemView item) => Dispatcher.Dispatch(new DeleteRequested(Guid.NewGuid(), item.Id, item.Version));
+    private void OnLogout() => Dispatcher.Dispatch(new LogoutRequested());
+}
