@@ -1,12 +1,99 @@
+using System.Collections.Immutable;
 using Benchmark.Frontend.Api;
 using Fluxor;
 namespace Benchmark.Frontend.Store;
-// Implement asynchronous HTTP effects, including stale-session rejection.
 public sealed class BoardEffects(IWorkItemApi api, IState<BoardState> state)
 {
-    [EffectMethod] public Task Login(LoginRequested action, IDispatcher dispatcher) => Task.CompletedTask;
-    [EffectMethod] public Task Load(LoadRequested action, IDispatcher dispatcher) => Task.CompletedTask;
-    [EffectMethod] public Task Add(AddRequested action, IDispatcher dispatcher) => Task.CompletedTask;
-    [EffectMethod] public Task Update(UpdateRequested action, IDispatcher dispatcher) => Task.CompletedTask;
-    [EffectMethod] public Task Delete(DeleteRequested action, IDispatcher dispatcher) => Task.CompletedTask;
+    [EffectMethod] public async Task Login(LoginRequested action, IDispatcher dispatcher)
+    {
+        var current = state.Value;
+        if (current.Pending) return;
+        var session = current.SessionVersion;
+        try
+        {
+            var token = await api.LoginAsync(action.Email, action.Password);
+            if (state.Value.SessionVersion != session) return;
+            dispatcher.Dispatch(new LoginSucceeded(action.RequestId, session, token));
+            dispatcher.Dispatch(new LoadRequested(action.RequestId));
+        }
+        catch (ApiFailureException ex)
+        {
+            if (state.Value.SessionVersion != session) return;
+            dispatcher.Dispatch(new OperationFailed(action.RequestId, session, ex.Status, ex.Message));
+        }
+    }
+    [EffectMethod] public async Task Load(LoadRequested action, IDispatcher dispatcher)
+    {
+        var current = state.Value;
+        if (current.AccessToken is null || current.SessionVersion == 0) return;
+        var session = current.SessionVersion;
+        try
+        {
+            var items = await api.ListAsync(current.AccessToken);
+            if (state.Value.SessionVersion != session) return;
+            dispatcher.Dispatch(new ItemsLoaded(action.RequestId, session, items));
+        }
+        catch (ApiFailureException ex)
+        {
+            if (state.Value.SessionVersion != session) return;
+            dispatcher.Dispatch(new OperationFailed(action.RequestId, session, ex.Status, ex.Message));
+        }
+    }
+    [EffectMethod] public async Task Add(AddRequested action, IDispatcher dispatcher)
+    {
+        var current = state.Value;
+        if (current.AccessToken is null) return;
+        var session = current.SessionVersion;
+        try
+        {
+            await api.AddAsync(current.AccessToken, action.Title, action.Status);
+            if (state.Value.SessionVersion != session) return;
+            var items = await api.ListAsync(current.AccessToken);
+            if (state.Value.SessionVersion != session) return;
+            dispatcher.Dispatch(new ItemsLoaded(action.RequestId, session, items));
+        }
+        catch (ApiFailureException ex)
+        {
+            if (state.Value.SessionVersion != session) return;
+            dispatcher.Dispatch(new OperationFailed(action.RequestId, session, ex.Status, ex.Message));
+        }
+    }
+    [EffectMethod] public async Task Update(UpdateRequested action, IDispatcher dispatcher)
+    {
+        var current = state.Value;
+        if (current.AccessToken is null) return;
+        var session = current.SessionVersion;
+        try
+        {
+            await api.UpdateAsync(current.AccessToken, action.Id, action.Title, action.Status, action.ExpectedVersion);
+            if (state.Value.SessionVersion != session) return;
+            var items = await api.ListAsync(current.AccessToken);
+            if (state.Value.SessionVersion != session) return;
+            dispatcher.Dispatch(new ItemsLoaded(action.RequestId, session, items));
+        }
+        catch (ApiFailureException ex)
+        {
+            if (state.Value.SessionVersion != session) return;
+            dispatcher.Dispatch(new OperationFailed(action.RequestId, session, ex.Status, ex.Message));
+        }
+    }
+    [EffectMethod] public async Task Delete(DeleteRequested action, IDispatcher dispatcher)
+    {
+        var current = state.Value;
+        if (current.AccessToken is null) return;
+        var session = current.SessionVersion;
+        try
+        {
+            await api.DeleteAsync(current.AccessToken, action.Id, action.ExpectedVersion);
+            if (state.Value.SessionVersion != session) return;
+            var items = await api.ListAsync(current.AccessToken);
+            if (state.Value.SessionVersion != session) return;
+            dispatcher.Dispatch(new ItemsLoaded(action.RequestId, session, items));
+        }
+        catch (ApiFailureException ex)
+        {
+            if (state.Value.SessionVersion != session) return;
+            dispatcher.Dispatch(new OperationFailed(action.RequestId, session, ex.Status, ex.Message));
+        }
+    }
 }
