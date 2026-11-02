@@ -2,5 +2,128 @@
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 @inject IState<BoardState> Board
 @inject IDispatcher Dispatcher
+@implements IDisposable
+
 <h1>Work Board</h1>
-<p>Benchmark starter: implement the three features in FEATURES.md.</p>
+
+@if (Board.Value.Error is not null)
+{
+    <div role="alert" data-testid="error">@Board.Value.Error</div>
+}
+
+@if (Board.Value.AccessToken is null)
+{
+    <form @onsubmit="OnLoginSubmit" @onsubmit:preventDefault>
+        <label>Email <input data-testid="email" type="email" @bind="email" /></label>
+        <label>Password <input data-testid="password" type="password" @bind="password" /></label>
+        <button data-testid="login" type="submit" disabled="@Board.Value.Pending">Login</button>
+    </form>
+}
+else
+{
+    <form @onsubmit="OnAddSubmit" @onsubmit:preventDefault>
+        <label>Title <input data-testid="title" type="text" @bind="newTitle" /></label>
+        <label>Status
+            <select data-testid="create-status" @bind="newStatus">
+                <option value="Todo">Todo</option>
+                <option value="InProgress">InProgress</option>
+                <option value="Done">Done</option>
+            </select>
+        </label>
+        <button data-testid="add" type="submit" disabled="@Board.Value.Pending">Add</button>
+    </form>
+
+    <label>Filter
+        <select data-testid="filter" @bind="filter" @bind:after="OnFilterChanged">
+            <option value="All">All</option>
+            <option value="Todo">Todo</option>
+            <option value="InProgress">InProgress</option>
+            <option value="Done">Done</option>
+        </select>
+    </label>
+
+    <ul data-testid="items">
+        @foreach (var item in VisibleItems)
+        {
+            <li data-testid="item-row" data-id="@item.Id">
+                <span>@item.Title</span>
+                <span>@item.Status</span>
+                <span>@item.Version</span>
+                <input data-testid="edit-title" type="text" value="@item.Title" @onchange="e => OnEditTitle(item.Id, e)" />
+                <select data-testid="edit-status" value="@item.Status" @onchange="e => OnEditStatus(item.Id, e)">
+                    <option value="Todo">Todo</option>
+                    <option value="InProgress">InProgress</option>
+                    <option value="Done">Done</option>
+                </select>
+                <button data-testid="save" type="button" disabled="@Board.Value.Pending" @onclick="() => OnSave(item)">Save</button>
+                <button data-testid="delete" type="button" disabled="@Board.Value.Pending" @onclick="() => OnDelete(item)">Delete</button>
+            </li>
+        }
+    </ul>
+
+    <button data-testid="logout" type="button" @onclick="OnLogout">Logout</button>
+}
+
+@code {
+    private string email = "";
+    private string password = "";
+    private string newTitle = "";
+    private string newStatus = "Todo";
+    private string filter = "All";
+    private readonly Dictionary<Guid, string> editTitles = new();
+    private readonly Dictionary<Guid, string> editStatuses = new();
+
+    private IEnumerable<WorkItemView> VisibleItems =>
+        Board.Value.Filter == "All" ? Board.Value.Items : Board.Value.Items.Where(i => i.Status == Board.Value.Filter);
+
+    private void OnLoginSubmit()
+    {
+        if (Board.Value.Pending) return;
+        Dispatcher.Dispatch(new LoginRequested(Guid.NewGuid(), email, password));
+    }
+
+    private void OnAddSubmit()
+    {
+        if (Board.Value.Pending) return;
+        Dispatcher.Dispatch(new AddRequested(Guid.NewGuid(), newTitle, newStatus));
+        newTitle = "";
+    }
+
+    private void OnFilterChanged()
+    {
+        Dispatcher.Dispatch(new FilterChanged(filter));
+    }
+
+    private void OnEditTitle(Guid id, ChangeEventArgs e)
+    {
+        editTitles[id] = e.Value?.ToString() ?? "";
+    }
+
+    private void OnEditStatus(Guid id, ChangeEventArgs e)
+    {
+        editStatuses[id] = e.Value?.ToString() ?? "";
+    }
+
+    private void OnSave(WorkItemView item)
+    {
+        if (Board.Value.Pending) return;
+        var title = editTitles.TryGetValue(item.Id, out var t) ? t : item.Title;
+        var status = editStatuses.TryGetValue(item.Id, out var s) ? s : item.Status;
+        Dispatcher.Dispatch(new UpdateRequested(Guid.NewGuid(), item.Id, title, status, item.Version));
+    }
+
+    private void OnDelete(WorkItemView item)
+    {
+        if (Board.Value.Pending) return;
+        Dispatcher.Dispatch(new DeleteRequested(Guid.NewGuid(), item.Id, item.Version));
+    }
+
+    private void OnLogout()
+    {
+        Dispatcher.Dispatch(new LogoutRequested());
+    }
+
+    public void Dispose()
+    {
+    }
+}
