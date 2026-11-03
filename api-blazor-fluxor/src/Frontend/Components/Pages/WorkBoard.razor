@@ -3,4 +3,44 @@
 @inject IState<BoardState> Board
 @inject IDispatcher Dispatcher
 <h1>Work Board</h1>
-<p>Benchmark starter: implement the three features in FEATURES.md.</p>
+@if (Board.Value.Error is not null)
+{
+    <div role="alert">@Board.Value.Error</div>
+}
+@if (Board.Value.AccessToken is null)
+{
+    <label>Email <input data-testid="email" @bind="_email" /></label>
+    <label>Password <input data-testid="password" type="password" @bind="_password" /></label>
+    <button data-testid="login" disabled="@Board.Value.Pending" @onclick="Login">Login</button>
+}
+else
+{
+    <label>Title <input data-testid="title" @bind="_title" /></label>
+    <label>Status <select data-testid="create-status" @bind="_status"><option>Todo</option><option>InProgress</option><option>Done</option></select></label>
+    <button data-testid="add" disabled="@Board.Value.Pending" @onclick="Add">Add</button>
+    <label>Filter <select data-testid="filter" @bind="_filter" @onchange="Filter"><option>All</option><option>Todo</option><option>InProgress</option><option>Done</option></select></label>
+    <button data-testid="logout" @onclick="Logout">Logout</button>
+    <div data-testid="items">
+        @foreach (var item in Board.Value.Items.Where(i => _filter == "All" || i.Status == _filter))
+        {
+            <div data-testid="item-row">
+                <span>@item.Title</span>
+                <span>@item.Status</span>
+                <span>@item.Version</span>
+                <input data-testid="edit-title" @bind="item.Title" />
+                <select data-testid="edit-status" @bind="item.Status"><option>Todo</option><option>InProgress</option><option>Done</option></select>
+                <button data-testid="save" disabled="@Board.Value.Pending" @onclick="() => Save(item)">Save</button>
+                <button data-testid="delete" disabled="@Board.Value.Pending" @onclick="() => Delete(item)">Delete</button>
+            </div>
+        }
+    </div>
+}
+@code {
+    private string _email = "", _password = "", _title = "", _status = "Todo", _filter = "All";
+    private void Login() => Dispatcher.Dispatch(new LoginRequested(Guid.NewGuid(), _email, _password));
+    private void Add() => Dispatcher.Dispatch(new AddRequested(Guid.NewGuid(), _title, _status));
+    private void Filter() => Dispatcher.Dispatch(new FilterChanged(_filter));
+    private void Save(WorkItemView item) => Dispatcher.Dispatch(new UpdateRequested(Guid.NewGuid(), item.Id, item.Title, item.Status, item.Version));
+    private void Delete(WorkItemView item) => Dispatcher.Dispatch(new DeleteRequested(Guid.NewGuid(), item.Id, item.Version));
+    private void Logout() => Dispatcher.Dispatch(new LogoutRequested());
+}
